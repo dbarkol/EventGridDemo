@@ -1,0 +1,44 @@
+﻿<!--
+  This sample demonstrates how to make a call to a webhook when errors occurs for an API.
+  Update the set-url value to call the webhook. Also, if the endpoint is a function, update
+  the x-function-key value as well (if it's non anonymous).
+ -->
+    <policies>
+    <inbound>
+        <rate-limit-by-key calls="5" renewal-period="30" counter-key="@(context.Subscription.Id)" />
+        <base />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+        <choose>
+            <when condition="@(context.Response.StatusCode >= 400)">
+                <send-one-way-request mode="new">
+                    <set-url>"place-function-endpoint-here"</set-url>
+                    <set-method>POST</set-method>
+                    <set-header name="Content-Type" exists-action="override">
+                        <value>application/json</value>
+                    </set-header>
+                    <set-header name="x-functions-key" exists-action="override">
+                        <value>place-function-key-here</value>
+                    </set-header>
+                    <set-body>@{
+                        return new JObject(
+                            new JProperty("Method", context.Request.Method),
+                            new JProperty("StatusCode", context.Response.StatusCode),
+                            new JProperty("StatusReason", context.Response.StatusReason),
+                            new JProperty("UserEmail", context.User.Email),
+                            new JProperty("UrlPath", context.Request.Url.Path + context.Request.Url.QueryString),
+                            new JProperty("UrlHost", context.Request.Url.Host)
+                        ).ToString();
+                    }</set-body>
+                </send-one-way-request>
+            </when>
+        </choose>
+    </on-error>
+</policies>
