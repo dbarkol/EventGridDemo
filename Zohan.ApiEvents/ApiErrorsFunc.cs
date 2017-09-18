@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web.Http.Results;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -42,9 +43,23 @@ namespace Zohan.ApiEvents
 
         private static async Task PublishGridEvent(ApiError error)
         {
-            // Set the event type to 'server' or 'client' based 
-            // on the status code.
-            var eventType = error.StatusCode >= 500 ? "server" : String.IsInterned("client");
+            // Set the event subject to 'server' or 'client' based 
+            // on the status code.            
+            string eventSubject;
+            if (error.StatusCode >= 500)
+            {
+                eventSubject = "server";
+            }
+            else
+            {
+                eventSubject = "client";
+
+                // If the status code is 429 then append
+                // additional content to the subject for 
+                // more filter options. 
+                if (error.StatusCode == 429)
+                    eventSubject += "/too-many-requests";
+            }
 
             // Retrieve the event grid endpoint and key so that we can 
             // publish events.
@@ -66,8 +81,8 @@ namespace Zohan.ApiEvents
                             StatusReason = error.StatusReason,
                             UserEmail = error.UserEmail
                         },
-                    Subject = "applicationerror",
-                    EventType = eventType,
+                    Subject = eventSubject,
+                    EventType = "applicationError",
                     EventTime = DateTime.UtcNow,
                     Id = Guid.NewGuid().ToString()
                 }
