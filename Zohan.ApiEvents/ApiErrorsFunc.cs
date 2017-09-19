@@ -26,15 +26,6 @@ namespace Zohan.ApiEvents
             if (apiError == null)
                 return req.CreateResponse(HttpStatusCode.BadRequest, "Missing body content.");
 
-            // Diagnostics
-            log.Info(string.Format("Method: {0}", apiError.Method));
-            log.Info(string.Format("Status Code: {0}", apiError.StatusCode));
-            log.Info(string.Format("Status Reason: {0}", apiError.StatusReason));
-            log.Info(string.Format("URL Path: {0}", apiError.UrlPath));
-            log.Info(string.Format("URL Host: {0}", apiError.UrlHost));
-            log.Info(string.Format("Email: {0}", apiError.UserEmail));
-
-            // Let's rock - send it!
             await PublishGridEvent(apiError);
 
             return req.CreateResponse(HttpStatusCode.OK,
@@ -67,9 +58,9 @@ namespace Zohan.ApiEvents
             var topicKey = System.Environment.GetEnvironmentVariable("EventGridTopicKey");
 
             // Events are sent to event grid in an array
-            var errors = new List<EventGridTopic<ApiError>>
+            var errors = new List<GridEvent<ApiError>>
             {
-                new EventGridTopic<ApiError>()
+                new GridEvent<ApiError>()
                 {
                     Data =
                         new ApiError()

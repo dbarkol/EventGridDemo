@@ -14,7 +14,7 @@ namespace Zohan.EventGrid
     /// Template for an Event Grid topic
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class EventGridTopic<T> where T : class
+    public class GridEvent<T> where T : class
     {
         #region Properties
 

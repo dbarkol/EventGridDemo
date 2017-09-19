@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +24,8 @@ namespace Zohan.EventGrid
         /// <returns></returns>
         public static async Task SendEvent(string topicEndpoint, string topicKey, object data)
         {
-            // Create a SAS token for the call to the event grid.
+            // Create a SAS token for the call to the event grid. We can do this with 
+            // the SAS key as well but wanted to show an alternative.
             var sas = CreateEventGridSasToken(topicEndpoint, DateTime.Now.AddDays(1), topicKey);
 
             // Instantiate an instance of the HTTP client with the 

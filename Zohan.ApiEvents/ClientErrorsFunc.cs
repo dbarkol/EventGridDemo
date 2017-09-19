@@ -19,7 +19,7 @@ namespace Zohan.ApiEvents
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
             log.Info(string.Format("ClientErrorsFunc - {0}", DateTime.Now.ToLongTimeString()));
-            var errors = await req.Content.ReadAsAsync<IEnumerable<EventGridTopic<ApiError>>>();
+            var errors = await req.Content.ReadAsAsync<IEnumerable<GridEvent<ApiError>>>();
             foreach (var e in errors)
             {
                 var message = string.Format("Received: {0} - {1} at {2}",

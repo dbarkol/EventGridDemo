@@ -21,9 +21,9 @@ namespace Zohan.EventGridTest
 
         private static async Task SendApiErrors()
         {
-            var errors = new List<EventGridTopic<ApiError>>
+            var errors = new List<GridEvent<ApiError>>
             {
-                new EventGridTopic<ApiError>()
+                new GridEvent<ApiError>()
                 {
                     Data =
                         new ApiError()
